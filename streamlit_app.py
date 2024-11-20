@@ -347,6 +347,12 @@ def load_config(config_name):
         st.error(f"Configuration file {config_name}.json not found.")
         return None
 
+def get_saved_configs():
+    config_dir = "configs"
+    if not os.path.exists(config_dir):
+        return []
+    return [f for f in os.listdir(config_dir) if f.endswith('.json')]
+
 # Streamlit UI
 st.title("AI Crypto Meme Tweet Generator")
 st.write("This app automatically use AI generates meme tweets based on the most suitable current trend")
@@ -395,18 +401,21 @@ with st.sidebar:
             }
             save_config(config_name, config_data)
 
+        saved_configs = get_saved_configs()
+        selected_config = st.selectbox("Load Configuration", saved_configs)
         if st.button("Load Configuration"):
-            config_data = load_config(config_name)
-            if config_data:
-                token_name = config_data.get("token_name", DEFAULT_TOKEN_NAME)
-                token_description = config_data.get("token_description", DEFAULT_TOKEN_DESCRIPTION)
-                image_description = config_data.get("image_description", DEFAULT_IMAGE_DESCRIPTION)
-                consumer_key = config_data.get("consumer_key", "")
-                consumer_secret = config_data.get("consumer_secret", "")
-                access_token = config_data.get("access_token", "")
-                access_token_secret = config_data.get("access_token_secret", "")
-                bearer_token = config_data.get("bearer_token", "")
-                prompt = config_data.get("prompt", DEFAULT_PROMPT)
+            if selected_config:
+                config_data = load_config(selected_config.replace('.json', ''))
+                if config_data:
+                    token_name = config_data.get("token_name", DEFAULT_TOKEN_NAME)
+                    token_description = config_data.get("token_description", DEFAULT_TOKEN_DESCRIPTION)
+                    image_description = config_data.get("image_description", DEFAULT_IMAGE_DESCRIPTION)
+                    consumer_key = config_data.get("consumer_key", "")
+                    consumer_secret = config_data.get("consumer_secret", "")
+                    access_token = config_data.get("access_token", "")
+                    access_token_secret = config_data.get("access_token_secret", "")
+                    bearer_token = config_data.get("bearer_token", "")
+                    prompt = config_data.get("prompt", DEFAULT_PROMPT)
 
 # 主要生成按钮
 if st.button("🚀 AI Generate Meme Tweet"):
